@@ -8,3 +8,12 @@
 - https://archive.org/details/zx-appeal/ZX-Appeal%20Mar%2087/page/n7/mode/2up
 - https://archive.org/details/zx-appeal/ZX-Appeal%20Apr%2087/page/8/mode/1up
 - https://archive.org/details/analog-computing-magazine-29/page/n59/mode/2up
+
+## History
+This project builds on the work of two other projects the first is here:
+
+https://github.com/ExtremeElectronics/SP0256-AL2-Pico-Emulation-Detail
+
+and contains code that drives the PWM to generate the audio from the phoneme data which is at this project:
+
+https://www.cpcwiki.eu/index.php/SP0256_Allophones
