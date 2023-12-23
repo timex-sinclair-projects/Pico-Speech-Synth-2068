@@ -2,7 +2,7 @@
  Raspberry Pi Pico emulating a General Instruments SP0256 in Wilf Rigter's ZX Voice.
 
 
-# References:
+## References
 - https://archive.org/details/zx-appeal/ZX-Appeal%20Oct%2086/page/n7/mode/1up
 - https://archive.org/details/zx-appeal/ZX-Appeal%20Jul-Aug%2086/page/n1/mode/2up
 - https://archive.org/details/zx-appeal/ZX-Appeal%20Mar%2087/page/n7/mode/2up
