@@ -18,4 +18,4 @@ and contains code that drives the PWM to generate the audio from the phoneme dat
 
 https://www.cpcwiki.eu/index.php/SP0256_Allophones
 
-https://github.com/timex-sinclair-projects/Pico-Speech-Synth-2068/blob/main/images/Speech%20Synth%202068%20pcb.png
+[https://github.com/timex-sinclair-projects/Pico-Speech-Synth-2068/blob/main/images/Speech%20Synth%202068%20pcb.png]
