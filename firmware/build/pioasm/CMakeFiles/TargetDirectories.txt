@@ -1,3 +1,0 @@
-/tree/projects/github/pico-sp0256/firmware/build/pioasm/CMakeFiles/rebuild_cache.dir
-/tree/projects/github/pico-sp0256/firmware/build/pioasm/CMakeFiles/edit_cache.dir
-/tree/projects/github/pico-sp0256/firmware/build/pioasm/CMakeFiles/pioasm.dir
