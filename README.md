@@ -244,7 +244,7 @@ This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the [LICENSE
 
 **Wilf Rigter** - Original ZX Voice design inspiration
 
-- [ZVIOCE](https://archive.org/details/zx-appeal/ZX-Appeal%20Oct%2086/page/n7/mode/1up)
+- [ZVOICE](https://archive.org/details/zx-appeal/ZX-Appeal%20Oct%2086/page/n7/mode/1up)
 - [2k program by Ken Abramson that utilizes the speech board on the 1000](https://archive.org/details/zx-appeal/ZX-Appeal%20Jul-Aug%2086/page/n1/mode/2up)
 - [ZXVOICE](https://archive.org/details/zx-appeal/ZX-Appeal%20Mar%2087/page/n7/mode/2up)
 - [ZX81/TS1000 (2K/16K) ZVOICE TEST](https://archive.org/details/zx-appeal/ZX-Appeal%20Apr%2087/page/8/mode/1up)
