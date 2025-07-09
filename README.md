@@ -1,6 +1,6 @@
 # Pico Speech Synth 2068
 
-A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040). This project provides hardware-accurate emulation for vintage computers like the Timex/Sinclair 1000 and 2068.
+A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040). This project provides hardware-accurate emulation for the Timex/Sinclair 1000 and 2068.
 
 ![SP0256 Emulator](https://img.shields.io/badge/Platform-RP2040-green) ![Language](https://img.shields.io/badge/Language-MicroPython-blue) ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
@@ -214,7 +214,7 @@ JR NZ, WAIT_LOOP   ; Wait while busy
 
 ## Documentation
 
-- **SP0256 Datasheet**: Original chip specifications and timing
+- **[SP0256 Datasheet](https://github.com/timex-sinclair-projects/Pico-Speech-Synth-2068/blob/main/docs/General_Instrument_-_SP0256A-AL2_datasheet_(Radio_Shack_276-1784)_-_Apr1984.pdf)**: Original chip specifications and timing
 - **Allophone Guide**: Complete phoneme usage and pronunciation
 - **Hardware Guide**: Step-by-step assembly instructions
 - **Programming Examples**: Z80 assembly and BASIC code samples
@@ -244,20 +244,18 @@ This project is licensed under the GNU GENERAL PUBLIC LICENSE - see the [LICENSE
 
 **Wilf Rigter** - Original ZX Voice design inspiration
 
-- https://archive.org/details/zx-appeal/ZX-Appeal%20Oct%2086/page/n7/mode/1up
-- https://archive.org/details/zx-appeal/ZX-Appeal%20Jul-Aug%2086/page/n1/mode/2up
-- https://archive.org/details/zx-appeal/ZX-Appeal%20Mar%2087/page/n7/mode/2up
-- https://archive.org/details/zx-appeal/ZX-Appeal%20Apr%2087/page/8/mode/1up
-- https://archive.org/details/analog-computing-magazine-29/page/n59/mode/2up
+- [ZVOICE](https://archive.org/details/zx-appeal/ZX-Appeal%20Oct%2086/page/n7/mode/1up)
+- [2k program by Ken Abramson that utilizes the speech board on the 1000](https://archive.org/details/zx-appeal/ZX-Appeal%20Jul-Aug%2086/page/n1/mode/2up)
+- [ZXVOICE](https://archive.org/details/zx-appeal/ZX-Appeal%20Mar%2087/page/n7/mode/2up)
+- [ZX81/TS1000 (2K/16K) ZVOICE TEST](https://archive.org/details/zx-appeal/ZX-Appeal%20Apr%2087/page/8/mode/1up)
+- [Cheep Talk: Build Your Own Speech Synthesizer](https://archive.org/details/analog-computing-magazine-29/page/n59/mode/2up)
 
 This project builds on the work of these two projects:
 
-- https://github.com/blackjetrock/pico-sp0256
-- https://github.com/ExtremeElectronics/SP0256-AL2-Pico-Emulation-Detail
+- [Rp2040 Emulation of the SP0256-AL2 IC](https://github.com/blackjetrock/pico-sp0256)
+- [SP0256-AL2-Pico-Emulation-Detail](https://github.com/ExtremeElectronics/SP0256-AL2-Pico-Emulation-Detail)
 
-and contains code that drives the PWM to generate the audio from the phoneme data which is at this project:
-
-https://www.cpcwiki.eu/index.php/SP0256_Allophones
+and contains allphone code that drives the PWM to generate the audio from the phoneme data, from the [CPC Wiki](https://www.cpcwiki.eu/index.php/SP0256_Allophones).
 
 ## Support
 
