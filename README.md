@@ -1,6 +1,6 @@
 # Pico Speech Synth 2068
 
-A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040). This project provides hardware-accurate emulation for vintage computers like the Timex/Sinclair 1000 and 2068.
+A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040). This project provides hardware-accurate emulation for the Timex/Sinclair 1000 and 2068.
 
 ![SP0256 Emulator](https://img.shields.io/badge/Platform-RP2040-green) ![Language](https://img.shields.io/badge/Language-MicroPython-blue) ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
