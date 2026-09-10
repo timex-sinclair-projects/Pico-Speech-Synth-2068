@@ -1,0 +1,246 @@
+org 1000
+
+; Leading underscores on entry points are external entry points to this ROM.
+;
+; Leading $ denotes labels outside of this ROM.  Both together indicate an 
+; entry point in this ROM which is used to jump to another ROM.
+; 
+; Leading @ denotes an allophone entry point.  Leading _@ is the external
+; entry point which later indirectly jumps to the corresponding @ label.
+
+
+; AL2 ROM Allophone Entry Points
+sym _@@PA1      1000    ;  10ms pause
+sym _@@PA2      1002    ;  30ms pause
+sym _@@PA3      1004    ;  50ms pause
+sym _@@PA4      1006    ; 100ms pause
+sym _@@PA5      1008    ; 200ms pause
+sym _@OY        100A    
+sym _@AY        100C
+sym _@EH        100E
+sym _@KK1       1010
+sym _@PP        1012
+sym _@JH        1014
+sym _@NN1       1016
+sym _@IH        1018
+sym _@TT2       101A
+sym _@RR1       101C
+sym _@AX        101E
+sym _@MM        1020
+sym _@TT1       1022
+sym _@DH1       1024
+sym _@IY        1026
+sym _@EY        1028
+sym _@DD1       102A
+sym _@UW1       102C
+sym _@AO        102E
+sym _@AA        1030
+sym _@YY2       1032
+sym _@AE1       1034
+sym _@HH1       1036
+sym _@BB1       1038
+sym _@TH        103A
+sym _@UH        103C
+sym _@UW2       103E
+sym _@AW        1040
+sym _@DD2       1042
+sym _@GG3       1044
+sym _@VV        1046
+sym _@GG1       1048
+sym _@SH        104A
+sym _@ZH        104C
+sym _@RR2       104E
+sym _@FF        1050
+sym _@KK2       1052
+sym _@KK3       1054
+sym _@ZZ        1056
+sym _@NG1       1058
+sym _@LL        105A
+sym _@WW        105C
+sym _@XR2       105E
+sym _@WH        1060
+sym _@YY1       1062
+sym _@CH        1064
+sym _@ER1       1066
+sym _@ER2       1068
+sym _@OW        106A
+sym _@DH2       106C
+sym _@SS        106E
+sym _@NN2       1070
+sym _@HH2       1072
+sym _@OR        1074
+sym _@AR        1076
+sym _@YR        1078
+sym _@GG2       107A
+sym _@EL        107C
+sym _@BB2       107E
+
+; AL2 Allophone Data 
+sym  @@PA1      10DE    ;  10ms pause
+sym  @@PA2      10E0    ;  30ms pause
+sym  @@PA3      10E2    ;  50ms pause
+sym  @@PA4      10E4    ; 100ms pause
+sym  @@PA5      10E6    ; 200ms pause
+sym  @OY        10E9    
+sym  @AY        1114
+sym  @EH        113F
+sym  @KK1       114C
+sym  @PP        115F
+sym  @JH        1172
+sym  @NN1       1191
+sym  @IH        11AD
+sym  @TT2       11BA
+sym  @RR1       11D2
+sym  @AX        11EF
+sym  @MM        11FC
+sym  @TT1       1210
+sym  @DH1       1223
+sym  @IY        123B
+sym  @EY        1277
+sym  @DD1       129A
+sym  @UW1       12AB
+sym  @AO        12BF
+sym  @AA        12CC
+sym  @YY2       12DF
+sym  @AE1       1315
+sym  @HH1       1322
+sym  @BB1       133B
+sym  @TH        1353
+sym  @UH        135D
+sym  @UW2       136A
+sym  @AW        1389
+sym  @DD2       13A3
+sym  @GG3       13B9
+sym  @VV        13CF
+sym  @GG1       13F1
+sym  @SH        1407
+sym  @ZH        1427
+sym  @RR2       143B
+sym  @FF        145A
+sym  @KK2       1464
+sym  @KK3       1475
+sym  @ZZ        148F
+sym  @NG1       14AE
+sym  @LL        14C6
+sym  @WW        14DA
+sym  @XR2       14FC
+sym  @WH        1531
+sym  @YY1       1558
+sym  @CH        157C
+sym  @ER1       158F
+sym  @ER2       15DE
+sym  @OW        1635
+sym  @DH2       1650
+sym  @SS        1668
+sym  @NN2       1672
+sym  @HH2       16A8
+sym  @OR        16BD
+sym  @AR        16E5
+sym  @YR        173B
+sym  @GG2       1760
+sym  @EL        1776
+sym  @BB2       1798
+
+
+; AL2 ROM Jump-Points
+;
+; Naming convention: 
+;   $X  == "External"
+;   18  == "08xx address space"
+;   :01 == "Entry point 1"
+;
+sym $X18:00     1800
+sym $X18:01     1802
+sym $X18:02     1804
+sym $X18:03     1806
+sym $X18:04     1808
+sym $X18:05     180A
+sym $X18:06     180C
+sym $X18:07     180E
+sym $X18:08     1810
+sym $X18:09     1812
+sym $X18:0A     1814
+sym $X18:0B     1816
+sym $X18:0C     1818
+sym $X18:0D     181A
+sym $X18:0E     181C
+sym $X18:0F     181E
+sym $X18:10     1820
+sym $X18:11     1822
+sym $X18:12     1824
+sym $X18:13     1826
+sym $X18:14     1828
+sym $X18:15     182A
+sym $X18:16     182C
+sym $X18:17     182E
+sym $X18:18     1830
+sym $X18:19     1832
+sym $X18:1A     1834
+sym $X18:1B     1836
+sym $X18:1C     1838
+sym $X18:1D     183A
+sym $X18:1E     183C
+sym $X18:1F     183E
+sym $X10:00     1000
+sym $X20:00     2000
+sym $X30:00     3000
+sym $X40:00     4000
+sym $X50:00     5000
+sym $X60:00     6000
+sym $X70:00     7000
+sym $X80:00     8000
+sym $X90:00     9000
+sym $XA0:00     A000
+sym $XB0:00     B000
+sym $XC0:00     C000
+sym $XD0:00     D000
+sym $XE0:00     E000
+sym $XF0:00     F000
+
+sym _$X08:00    1080
+sym _$X08:01    1082
+sym _$X08:02    1084
+sym _$X08:03    1086
+sym _$X08:04    1088
+sym _$X08:05    108A
+sym _$X08:06    108C
+sym _$X08:07    108E
+sym _$X08:08    1090
+sym _$X08:09    1092
+sym _$X08:0A    1094
+sym _$X08:0B    1096
+sym _$X08:0C    1098
+sym _$X08:0D    109A
+sym _$X08:0E    109C
+sym _$X08:0F    109E
+sym _$X08:10    10A0
+sym _$X08:11    10A2
+sym _$X08:12    10A4
+sym _$X08:13    10A6
+sym _$X08:14    10A8
+sym _$X08:15    10AA
+sym _$X08:16    10AC
+sym _$X08:17    10AE
+sym _$X08:18    10B0
+sym _$X08:19    10B2
+sym _$X08:1A    10B4
+sym _$X08:1B    10B6
+sym _$X08:1C    10B8
+sym _$X08:1D    10BA
+sym _$X08:1E    10BC
+sym _$X08:1F    10BE
+sym _$X10:00    10C0
+sym _$X20:00    10C2
+sym _$X30:00    10C4
+sym _$X40:00    10C6
+sym _$X50:00    10C8
+sym _$X60:00    10CA
+sym _$X70:00    10CC
+sym _$X80:00    10CE
+sym _$X90:00    10D0
+sym _$XA0:00    10D2
+sym _$XB0:00    10D4
+sym _$XC0:00    10D6
+sym _$XD0:00    10D8
+sym _$XE0:00    10DA
+sym _$XF0:00    10DC
