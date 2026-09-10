@@ -2,6 +2,17 @@
 
 *Prepared 2026-09-10, revised the same day after decisions on I2S audio, ROM distribution, TS1000 footprint, dual TTS engines, SMD assembly and port decode. Builds on the Pico-Speech-Synth-2068 repo (RP2040-Zero + 74LVC245 + 74HC138 + 2N3904 PCB, Aug 2023) and the Woodroffe-derived C code in this folder.*
 
+## Status, end of 10 September 2026
+
+| Phase | State | Where |
+|---|---|---|
+| 0 Desktop port of the SP0256 core | Done. ROM path proven; pauses within 4 ms of Table 6; pitch matches real-chip recordings. Speed, pitch and clock controls. | `core/`, `harness/`, `rom/` |
+| 1 Pico firmware | Written and compiled, not yet run on hardware. | `firmware/` v0.3 |
+| 2 Text engines, BASIC, TS1000 driver | Done on the desktop: NRL and CTS256 engines, OUT 55, 2068 demo, TS1000 REM-line driver (`zxvoice1000.p`). | `tts/`, `basic/` |
+| 3 Rev B hardware | Designed, PCB not yet drawn: design page, pin-level netlist for EasyEDA Pro, Rev B firmware build (I2S 32 kHz, status byte, clock sense, board ID). | `hardware/revb/`, `docs/rev-b-hardware.html` |
+
+All merged to `main`. Not yet done anywhere: running the firmware on a real card. Next inputs: hardware results on the 2068 and TS1000, then the Rev B schematic in EasyEDA.
+
 ## 1. Where things stand
 
 **What the ZX Voice actually is.** Wilf Rigter's ZVOICE / ZX Voice (ZX-Appeal, Oct 1986; CATS Jan 1987) was a Vancouver Sinclair Users Group club kit (~$25), not a commercial product. It kept the I/O map of Rigter's earlier 8255-based ZSPEAK so existing software ran unchanged. It works on the TS1000/1500/ZX81 and the TS2068 from one PCB.
@@ -133,7 +144,7 @@ Text and allophones can be mixed; both feed the same allophone queue. In text mo
 | 0 | Port `sp0256.cpp` to a desktop test harness; render all 64 entries to WAV and compare durations to Table 6. Prove the ROM path. **Done 2026-09-10** (`core/`, `harness/`). | none |
 | 1 | Pico SDK firmware: PIO capture, LPC core, PWM DMA, LRQ/SBY, USB console. Allophone mode working on the 2068. **Written and compiled 2026-09-10** (`firmware/`), awaiting hardware test. | **existing PCB** (D0–D5 is enough for this phase) |
 | 2 | Both TTS engines (desktop first, then Pico), OUT 55 text port and engine switch, exception lexicon, 2068 BASIC demos, TS1000 ML driver. **Done 2026-09-10**: engines and port (`tts/`), 2068 demo and TS1000 REM-line driver with .P file (`basic/`). | Rev B PCB (D6/D7, second '245, '688 decode, /RESET, I2S amp, TS1000 footprint) |
-| 3 | CLK-tracking pitch, IN 55 byte readback, documentation and timexsinclair.com write-up. | Rev B |
+| 3 | CLK-tracking pitch, IN 55 byte readback, I2S amplifier, documentation and timexsinclair.com write-up. **Firmware side done 2026-09-10 (v0.3); EasyEDA schematic/PCB and write-up remain.** | Rev B |
 
 Phase 1 needs no new hardware, so the firmware rewrite can start immediately and be validated on the board you already have.
 
