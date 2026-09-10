@@ -17,6 +17,7 @@
 #include "text.h"
 #include "audio.h"
 #include "tts.h"
+#include "board.h"
 
 static char line[256];
 static int  llen;
@@ -36,6 +37,7 @@ static void help(void)
 	"  SPEED <50..200>      speaking speed, percent\n"
 	"  PITCH <50..200>      pitch, percent\n"
 	"  CLOCK <2500000..4000000>  emulated crystal, Hz (3250000 = TS1000)\n"
+	"  OUTPUT SPEAKER|LINE  audio path (Rev B)\n"
 	"  HELP\n");
 }
 
@@ -59,19 +61,20 @@ static void list(void)
 
 static void status(void)
 {
+	printf("board    : %s (id %d), host %s, bus clock %lu Hz\n", BOARD_NAME, board_id(), board_host_name(), (unsigned long)board_bus_clock_hz());
 	printf("chip     : %s, %s, %lu allophones started\n",
 	       synth_busy() ? "LRQ busy" : "LRQ ready", synth_idle() ? "SBY idle" : "talking",
 	       (unsigned long)synth_played());
-	printf("bus      : OUT23 %lu (dropped %lu), OUT55 %lu, resets %lu\n",
+	printf("bus      : OUT23 %lu (dropped %lu), OUT55 %lu, IN39 %lu, resets %lu\n",
 	       (unsigned long)bus_stats.ald_writes, (unsigned long)bus_stats.ald_dropped,
-	       (unsigned long)bus_stats.txt_writes, (unsigned long)bus_stats.resets);
+	       (unsigned long)bus_stats.txt_writes, (unsigned long)bus_stats.status_reads, (unsigned long)bus_stats.resets);
 	printf("text     : %lu chars, %lu controls, %d pending\n",
 	       (unsigned long)text_chars(), (unsigned long)text_controls(), text_pending());
 	printf("queue    : %d waiting\n", synth_queue_count());
 	printf("engine   : %s\n", text_engine_name());
 	printf("clock    : %lu Hz -> %lu samples/s\n", (unsigned long)synth_get_clock(), (unsigned long)audio_get_rate());
 	printf("speed    : %d %%   pitch: %d %%\n", synth_get_speed(), synth_get_pitch());
-	printf("audio    : %lu underruns\n", (unsigned long)audio_underruns());
+	printf("audio    : %s, %lu underruns\n", audio_backend_name(), (unsigned long)audio_underruns());
 }
 
 static void run(char *cmd)
@@ -94,6 +97,7 @@ static void run(char *cmd)
 	else if (!strcmp(cmd, "SPEED")) { synth_set_speed(atoi(args)); printf("speed %d %%\n", synth_get_speed()); }
 	else if (!strcmp(cmd, "PITCH")) { synth_set_pitch(atoi(args)); printf("pitch %d %%\n", synth_get_pitch()); }
 	else if (!strcmp(cmd, "CLOCK")) { synth_set_clock((uint32_t)atol(args)); printf("clock requested %s Hz\n", args); }
+	else if (!strcmp(cmd, "OUTPUT")) { audio_select((args[0] == 'S' || args[0] == 's') ? AUDIO_I2S : AUDIO_PWM); printf("output %s\n", audio_backend_name()); }
 	else printf("? unknown command '%s' (HELP)\n", cmd);
 }
 

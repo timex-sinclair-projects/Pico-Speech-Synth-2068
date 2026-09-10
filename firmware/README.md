@@ -1,8 +1,13 @@
-# ZX Voice replica firmware (Phases 1 and 2)
+# ZX Voice replica firmware
 
-RP2040 firmware that makes the 2023 "ZX Voice with Pico" board (RP2040-Zero,
-74LVC245, 74HC138, 2N3904) behave as an SP0256-AL2 on Wilf Rigter's ZX Voice
-port map, using ROM emulation instead of recordings.
+RP2040 firmware that makes a ZX Voice card behave as an SP0256-AL2 on Wilf
+Rigter's port map, using ROM emulation instead of recordings. One source
+tree, two boards, selected at build time in `config.h`:
+
+| `ZXV_BOARD` | Card | Output |
+|---|---|---|
+| `BOARD_ZERO2023` | the 2023-08-31 RP2040-Zero card (74LVC245, 74HC138, 2N3904, PWM line-out) | `build/zero2023/zxvoice-zero2023.uf2` |
+| `BOARD_REVB` | `../hardware/revb`: RP2040 on the board, three '245s, '688 + '138, '1G125, MAX98357A | `build/revb/zxvoice-revb.uf2` |
 
 ```
 core 0   USB console · PIO capture of OUT 23 / OUT 55 · text and control bytes
@@ -12,7 +17,8 @@ core 1   SP0256 core (../core/sp0256.c) · PWM audio through DMA · /LRQ and SBY
 ## Build and flash
 
 ```sh
-./build.sh                 # -> build/zxvoice.uf2
+./build.sh                 # both boards
+BOARDS=revb ./build.sh     # one of them
 ```
 
 Needs cmake, python3, the ARM GNU toolchain in `~/pico/arm-gnu-toolchain-*`
@@ -22,15 +28,23 @@ drive. The board reboots into the firmware and appears as a USB serial port.
 
 ## Pins (config.h)
 
-| GPIO | Signal | Notes |
+| GPIO | 2023 card | Rev B |
 |---|---|---|
-| GP0–GP7 | D0–D7 | 2023 board wires D0–D5; GP6/GP7 pulled down |
-| GP8 | /ALD | OUT 23 strobe, 74HC138 Y5 through the '245 |
-| GP9 | /TXT | OUT 55 strobe (Rev B; pulled up until then) |
-| GP10 | /RESET | bus reset (Rev B; pulled up until then) |
-| GP11 | PWM | audio, 100 kHz carrier, into the RC filter |
-| GP13 | /LRQ | 1 = busy; drives the 2N3904 that pulls D7 low on IN 39 |
-| GP14 | SBY | 1 = idle |
+| GP0–GP7 | D0–D5 (GP6/7 pulled down) | D0–D7 |
+| GP8 | /ALD, OUT 23 strobe | same |
+| GP9 | unwired (pulled up) | /TXT, OUT 55 strobe |
+| GP10 | unwired (pulled up) | /RESET |
+| GP11 | PWM line-out | PWM line-out |
+| GP12 | — | bus CLK sense |
+| GP13 | /LRQ, 1 = busy, into the 2N3904 | READY, 1 = ready, into the 74LVC1G125 |
+| GP14 | SBY LED | SBY LED |
+| GP15 | — | /RDSTAT sense (counts IN 39) |
+| GP16–18 | — | I2S DIN, BCLK, LRCLK to the MAX98357A |
+| GP19 | — | amplifier enable (SD_MODE) |
+| GP20–27 | — | status byte, driven onto D0–D7 by U_R during IN 55 |
+| GP28, GP29 | — | board-ID jumpers (expect 1) |
+
+The Rev B build uses `boards/zxvoice_revb.h` (bare RP2040, 4 MB W25Q32).
 
 ## How the bus is handled
 
@@ -53,12 +67,36 @@ drive. The board reboots into the firmware and appears as a USB serial port.
 
 ## Audio
 
-Core 1 renders one 10 kHz sample at a time and writes it ten times into a
-DMA buffer; two chained DMA channels stream the buffer into the PWM
-compare register at 100 kHz, paced by the PWM itself. Latency is one
-64-sample block, 6.4 ms. The "clock" control changes only the PWM period,
-so pitch and speed move together as with a different crystal. Speed and
-pitch controls are applied inside the core (see `../harness/README.md`).
+The back end pulls samples from the synth (`audio.h`), so two back ends
+share one core:
+
+- **PWM** (`audio_pwm.c`, both boards): each synth sample is held for ten
+  PWM periods at 100 kHz, streamed by two chained DMA channels into the
+  compare register. Latency one 64-sample block, 6.4 ms. The "clock"
+  control changes the PWM period, so pitch and speed move together as with
+  a different crystal.
+- **I2S** (`audio_i2s.c`, Rev B, default there): the MAX98357A accepts
+  LRCLK only at 8/16/32/44.1/48 kHz, so frames run at 32 kHz and the
+  10 kHz stream is linearly interpolated through a Q16 phase accumulator;
+  the "clock" control changes the step. 256-frame blocks, 8 ms. The
+  amplifier is enabled through SD_MODE while talking and for 400 ms after,
+  then muted. `OUTPUT SPEAKER|LINE` on the console switches back ends.
+
+Speed and pitch controls are applied inside the core (see
+`../harness/README.md`).
+
+## Rev B extras
+
+- **Status byte on IN 55**: bit 7 ready (as IN 39), bit 6 text buffer has
+  room, bit 5 talking, bit 4 engine (1 = CTS256). Driven on GP20–27 and put
+  on the bus by U_R while /RDEXT is low; no firmware timing involved.
+- **Bus clock sense**: at boot a PIO state machine counts CLK edges for
+  20 ms. 3.25 MHz means a TS1000, 3.5 MHz a 2068. On a TS1000 the original
+  ZX Voice ran the SP0256 from the CPU clock (jumper J2), so the firmware
+  sets the emulated clock to the measured value there and keeps the
+  3.12 MHz crystal value on a 2068. `CLOCK` on the console overrides.
+- **Board ID**: GP28/29 jumpers are read at boot; a mismatch with the
+  compiled board prints a warning on the console.
 
 ## Console
 
@@ -70,8 +108,6 @@ running program.
 
 ## Not yet done
 
-- I2S output for the Rev B MAX98357A (the DMA/PWM path is isolated in
-  `audio.c`, so this is a second back end, not a rewrite).
 - Untested on hardware as of this commit: the code has been compiled, and
   the core is the one validated in the desktop harness, but the PIO capture,
   DMA audio and pin behaviour need a board and a scope.

@@ -33,15 +33,25 @@ static volatile uint32_t nchars, nctl;
 static volatile int      engine = TTS_NRL;
 static volatile bool     echo;
 
+static void publish_status(void);
+
 static int pct_from_nibble(int n)         /* 0..15 -> 50..200 */
 {
 	return 50 + n * 10;
 }
 
-void text_init(void) { tlen = 0; }
+void text_init(void) { tlen = 0; publish_status(); }
 void text_reset(void) { tlen = 0; tflush = false; }
 
-void text_set_engine(int e) { engine = e ? TTS_CTS256 : TTS_NRL; }
+static void publish_status(void)
+{
+	uint8_t b = 0;
+	if (tlen < TEXT_BUFFER - 64) b |= 0x40;      /* bit 6: text buffer has room */
+	if (engine == TTS_CTS256) b |= 0x10;         /* bit 4: engine               */
+	synth_set_status_bits(b);
+}
+
+void text_set_engine(int e) { engine = e ? TTS_CTS256 : TTS_NRL; publish_status(); }
 const char *text_engine_name(void) { return tts_engine_name((tts_engine_t)engine); }
 
 void __time_critical_func(text_bus_byte)(uint8_t v)
@@ -63,6 +73,7 @@ void __time_critical_func(text_bus_byte)(uint8_t v)
 	if (v < 0x20) return;
 	if (tlen < TEXT_BUFFER) tbuf[tlen++] = v;
 	if (v == '.' || v == '!' || v == '?' || tlen >= TEXT_BUFFER) tflush = true;
+	publish_status();
 }
 
 static void emit_to_synth(void *ctx, uint8_t a)
@@ -91,6 +102,7 @@ void text_poll(void)
 	memcpy(line, (const void *)tbuf, (size_t)n);
 	line[n] = 0;
 	tlen = 0;
+	publish_status();
 	text_say(line);
 }
 

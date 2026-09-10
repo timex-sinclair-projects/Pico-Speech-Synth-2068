@@ -12,17 +12,28 @@
 #include "synth.h"
 #include "text.h"
 #include "console.h"
+#include "board.h"
 
 int main(void)
 {
 	stdio_init_all();
 
+	board_init();           /* jumpers and bus clock, before anything talks */
 	text_init();
-	synth_start();          /* core 1 up first: it owns /LRQ and SBY   */
+	synth_start();          /* core 1 up first: it owns READY and SBY  */
 	bus_init();             /* then let the bus in                     */
 	console_init();
 
-	printf("\nZX Voice replica " FW_VERSION " (SP0256-AL2 emulation)\n> ");
+	/* On a TS1000 the original ran the chip from the CPU clock. */
+	if (board_suggested_sp0256_clock() != DEFAULT_CLOCK_HZ)
+		synth_set_clock(board_suggested_sp0256_clock());
+
+	printf("\nZX Voice replica " FW_VERSION " (SP0256-AL2 emulation), board " BOARD_NAME "\n");
+#if HAS_BOARD_ID
+	if (board_id() != BOARD_ID_EXPECTED)
+		printf("warning: board-ID jumpers read %d, this firmware expects %d\n", board_id(), BOARD_ID_EXPECTED);
+#endif
+	printf("> ");
 
 	for (;;) {
 		console_poll();

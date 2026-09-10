@@ -11,6 +11,7 @@ typedef struct {
 	uint32_t ald_dropped;     /* dropped because the chip was busy     */
 	uint32_t txt_writes;      /* bytes captured on OUT 55              */
 	uint32_t resets;          /* bus /RESET pulses seen                */
+	uint32_t status_reads;    /* IN 39 cycles seen (Rev B, /RDSTAT)    */
 } bus_stats_t;
 
 extern volatile bus_stats_t bus_stats;

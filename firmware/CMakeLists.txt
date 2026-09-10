@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 
-set(PICO_BOARD waveshare_rp2040_zero CACHE STRING "Board type")
+set(ZXV_BOARD "BOARD_ZERO2023" CACHE STRING "BOARD_ZERO2023 or BOARD_REVB")
+if(ZXV_BOARD STREQUAL "BOARD_REVB")
+	set(PICO_BOARD zxvoice_revb CACHE STRING "Board type")
+	list(APPEND PICO_BOARD_HEADER_DIRS ${CMAKE_CURRENT_LIST_DIR}/boards)
+else()
+	set(PICO_BOARD waveshare_rp2040_zero CACHE STRING "Board type")
+endif()
 
 include(pico_sdk_import.cmake)
 
@@ -24,7 +30,10 @@ add_custom_command(
 add_executable(zxvoice
 	main.c
 	bus.c
+	board.c
 	audio.c
+	audio_pwm.c
+	audio_i2s.c
 	synth.c
 	text.c
 	console.c
@@ -39,6 +48,7 @@ add_executable(zxvoice
 	${ROM_H})
 
 pico_generate_pio_header(zxvoice ${CMAKE_CURRENT_LIST_DIR}/bus.pio)
+pico_generate_pio_header(zxvoice ${CMAKE_CURRENT_LIST_DIR}/audio_i2s.pio)
 
 target_include_directories(zxvoice PRIVATE
 	${CMAKE_CURRENT_LIST_DIR}
@@ -47,6 +57,12 @@ target_include_directories(zxvoice PRIVATE
 	${TTS_DIR})
 
 target_compile_options(zxvoice PRIVATE -Wall -Wextra -Wno-unused-parameter)
+target_compile_definitions(zxvoice PRIVATE ZXV_BOARD=${ZXV_BOARD})
+if(ZXV_BOARD STREQUAL "BOARD_REVB")
+	set_target_properties(zxvoice PROPERTIES OUTPUT_NAME zxvoice-revb)
+else()
+	set_target_properties(zxvoice PROPERTIES OUTPUT_NAME zxvoice-zero2023)
+endif()
 
 target_link_libraries(zxvoice
 	pico_stdlib

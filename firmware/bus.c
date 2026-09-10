@@ -37,12 +37,17 @@ static void __isr __time_critical_func(pio_irq_handler)(void)
 	}
 }
 
-static void __isr reset_irq_handler(uint gpio, uint32_t events)
+static void __isr gpio_irq_handler(uint gpio, uint32_t events)
 {
-	(void)gpio; (void)events;
-	bus_stats.resets++;
-	synth_request_reset();
-	text_reset();
+	(void)events;
+#if HAS_RDSTAT
+	if (gpio == PIN_RDSTAT) { bus_stats.status_reads++; return; }
+#endif
+	if (gpio == PIN_RESET) {
+		bus_stats.resets++;
+		synth_request_reset();
+		text_reset();
+	}
 }
 
 void bus_init(void)
@@ -74,5 +79,11 @@ void bus_init(void)
 	gpio_init(PIN_RESET);
 	gpio_set_dir(PIN_RESET, GPIO_IN);
 	gpio_pull_up(PIN_RESET);
-	gpio_set_irq_enabled_with_callback(PIN_RESET, GPIO_IRQ_EDGE_FALL, true, reset_irq_handler);
+	gpio_set_irq_enabled_with_callback(PIN_RESET, GPIO_IRQ_EDGE_FALL, true, gpio_irq_handler);
+#if HAS_RDSTAT
+	gpio_init(PIN_RDSTAT);
+	gpio_set_dir(PIN_RDSTAT, GPIO_IN);
+	gpio_pull_up(PIN_RDSTAT);
+	gpio_set_irq_enabled(PIN_RDSTAT, GPIO_IRQ_EDGE_FALL, true);
+#endif
 }

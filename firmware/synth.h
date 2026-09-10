@@ -25,6 +25,9 @@ void     synth_set_pitch(int pct);      /* 50..200                      */
 int      synth_get_speed(void);
 int      synth_get_pitch(void);
 
+/* Bits 0..6 of the IN 55 status byte (Rev B); bit 7 and bit 5 are set here. */
+void     synth_set_status_bits(uint8_t bits);
+
 /* Status for the console. */
 bool     synth_busy(void);              /* /LRQ level                   */
 bool     synth_idle(void);              /* SBY level                    */
