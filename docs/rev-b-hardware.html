@@ -1,0 +1,455 @@
+<title>ZX Voice Rev B Hardware</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F4F5F1; --surface:#FFFFFF; --ink:#1A1E28; --muted:#5F6878; --rule:#D7DAD3;
+  --accent:#1D4F9E; --copper:#B8873A; --copper-soft:#F3E9D6; --tint:#E9EEF7; --code-bg:#ECEFE8;
+  --v5:#FBEFD9; --v33:#E4EDF9;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101419; --surface:#171C24; --ink:#E3E6EB; --muted:#9AA3B2; --rule:#2A313C;
+    --accent:#7CACF3; --copper:#D9B266; --copper-soft:#2A2519; --tint:#1B2534; --code-bg:#1C222B;
+    --v5:#2C2416; --v33:#172033;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101419; --surface:#171C24; --ink:#E3E6EB; --muted:#9AA3B2; --rule:#2A313C;
+  --accent:#7CACF3; --copper:#D9B266; --copper-soft:#2A2519; --tint:#1B2534; --code-bg:#1C222B;
+  --v5:#2C2416; --v33:#172033;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;margin:0}
+.page{max-width:82ch;margin:0 auto;padding:40px 24px 80px}
+header{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:36px}
+.eyebrow{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:52px;line-height:1;margin:10px 0 14px;text-wrap:balance}
+.lede{font-size:17px;max-width:68ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:18px;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:500}
+h2{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;font-size:30px;line-height:1.05;margin:52px 0 14px;display:flex;align-items:baseline;gap:14px}
+h2 .n{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--copper);letter-spacing:.08em;font-weight:500}
+h3{font-weight:600;font-size:16.5px;margin:28px 0 8px}
+p{max-width:70ch;margin:0 0 14px}
+ul,ol{max-width:70ch;padding-left:22px;margin:0 0 16px}
+li{margin-bottom:8px}
+li::marker{color:var(--copper)}
+code{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.9em;background:var(--code-bg);padding:1px 5px;border-radius:3px}
+.tablewrap{overflow-x:auto;margin:0 0 18px}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th{font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 12px 6px 0;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+td{padding:7px 12px 7px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+td code{white-space:nowrap}
+.summary{background:var(--surface);border:1px solid var(--rule);border-top:4px solid var(--accent);padding:20px 22px;margin:0 0 28px}
+.summary p{margin:0}
+.summary .eyebrow{margin-bottom:8px;display:block}
+.callout{background:var(--copper-soft);border-left:3px solid var(--copper);padding:12px 16px;margin:0 0 18px;max-width:70ch}
+.callout p{margin:0}
+figure{margin:22px 0 26px;padding:0}
+figure svg{max-width:100%;height:auto;display:block;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:12px}
+figcaption{font-size:13.5px;color:var(--muted);margin-top:8px;max-width:70ch}
+.pinfont{font-family:"IBM Plex Mono",monospace;font-size:13px}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+@media (max-width:600px){h1{font-size:40px}.page{padding:28px 16px 60px}}
+</style>
+
+<div class="page">
+<header>
+  <span class="eyebrow">Hardware design · Rev B</span>
+  <h1>ZX Voice Rev B Hardware</h1>
+  <p class="lede">The board that replaces the 2023 RP2040-Zero card: same ZX Voice port map, all eight data bits shifted, strict port decode, an I2S amplifier, the RP2040 on the board, and a TS1000 edge that also fits the 2068. Every 5 V signal crosses to the Pico through a 74LVC245.</p>
+  <div class="meta"><span>Date <b>2026-09-10, rev 2</b></span><span>Supersedes <b>Schematic 2023-08-31 (RP2040-Zero)</b></span><span>Netlist <b>hardware/revb/zxvoice-revb.net</b></span></div>
+</header>
+
+<div class="summary">
+  <span class="eyebrow">Design in one paragraph</span>
+  <p>A two-layer card on the TS1000 edge footprint. A 74HCT688 compares A0–A3, A6, A7 against solder jumpers and a 74HCT138 splits A4/A5 and /RD into four strobes, so the board answers exactly to 0x17 (OUT 23), 0x27 (IN 39), 0x37 (OUT 55 / IN 55) unless a "loose decode" jumper restores the original three-bit decode. Three 74LVC245s carry D0–D7 in, the strobes plus /RESET and CLK in, and a status byte out; a 74LVC1G125 drives D7 during IN 39. Reads are answered by hardware, so no firmware timing is involved. The RP2040 sits on the board with a 4 MB flash, a 12 MHz crystal, a 3.3 V LDO and USB-C. Audio is a MAX98357A I2S amplifier into a 4–8 Ω speaker, with a PWM line-out kept for headphones. Power is the bus 5 V or USB, diode-ORed, with a polyfuse on the bus side.</p>
+</div>
+
+<h2><span class="n">01</span>Block diagram</h2>
+<figure>
+<svg viewBox="0 0 940 400" role="img" aria-label="Signal flow from the TS1000 edge connector through 5 V decode logic and 74LVC245 level shifters to the RP2040, with the D7 status path back to the bus and audio outputs; the 5 V and 3.3 V domains are shaded separately.">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+  </defs>
+  <!-- domains -->
+  <rect x="8" y="8" width="452" height="384" fill="var(--v5)" stroke="none"/>
+  <rect x="468" y="8" width="464" height="384" fill="var(--v33)" stroke="none"/>
+  <text x="20" y="28" fill="var(--muted)" font-size="11" letter-spacing="1.5">5 V DOMAIN</text>
+  <text x="480" y="28" fill="var(--muted)" font-size="11" letter-spacing="1.5">3.3 V DOMAIN</text>
+  <!-- edge connector -->
+  <rect x="20" y="48" width="86" height="300" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="63" y="70" text-anchor="middle" font-weight="500">EDGE</text>
+  <text x="63" y="84" text-anchor="middle" fill="var(--muted)" font-size="10">TS1000 / 2068</text>
+  <text x="30" y="118" font-size="11">D0–D7</text>
+  <text x="30" y="160" font-size="11">A0–A7</text>
+  <text x="30" y="200" font-size="11">/IORQ /RD /M1</text>
+  <text x="30" y="240" font-size="11">/RESET CLK</text>
+  <text x="30" y="300" font-size="11">+5 V GND</text>
+  <!-- decode -->
+  <rect x="190" y="140" width="130" height="86" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="255" y="164" text-anchor="middle" font-weight="500">DECODE</text>
+  <text x="255" y="180" text-anchor="middle" font-size="11">74HCT688</text>
+  <text x="255" y="194" text-anchor="middle" font-size="11">74HCT138</text>
+  <text x="255" y="212" text-anchor="middle" font-size="10" fill="var(--muted)">jumpers: port, loose</text>
+  <line x1="106" y1="156" x2="190" y2="156" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="106" y1="196" x2="190" y2="196" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <!-- LVC245 data -->
+  <rect x="360" y="90" width="90" height="46" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="405" y="109" text-anchor="middle" font-size="11">74LVC245</text>
+  <text x="405" y="124" text-anchor="middle" font-size="10" fill="var(--muted)">U_D  A→B</text>
+  <line x1="106" y1="113" x2="360" y2="113" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <!-- LVC245 strobes -->
+  <rect x="360" y="160" width="90" height="46" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="405" y="179" text-anchor="middle" font-size="11">74LVC245</text>
+  <text x="405" y="194" text-anchor="middle" font-size="10" fill="var(--muted)">U_S  A→B</text>
+  <line x1="320" y1="176" x2="360" y2="176" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="340" y="170" text-anchor="middle" font-size="9" fill="var(--muted)">4 strobes</text>
+  <line x1="106" y1="236" x2="340" y2="236" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="340" y1="236" x2="340" y2="192" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="340" y1="192" x2="360" y2="192" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <!-- 1G125 status -->
+  <rect x="360" y="232" width="90" height="46" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="405" y="251" text-anchor="middle" font-size="11">74LVC1G125</text>
+  <text x="405" y="266" text-anchor="middle" font-size="10" fill="var(--muted)">D7 ← READY</text>
+  <line x1="360" y1="262" x2="120" y2="262" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#ah)"/>
+  <text x="240" y="257" text-anchor="middle" font-size="10" fill="var(--accent)">D7 while IN 39 (/RDSTAT enables)</text>
+  <!-- LVC245 readback -->
+  <rect x="360" y="304" width="90" height="46" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="405" y="323" text-anchor="middle" font-size="11">74LVC245</text>
+  <text x="405" y="338" text-anchor="middle" font-size="10" fill="var(--muted)">U_R  B→A</text>
+  <line x1="360" y1="334" x2="120" y2="334" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#ah)"/>
+  <text x="240" y="329" text-anchor="middle" font-size="10" fill="var(--accent)">D0–D7 while IN 55 (/RDEXT enables)</text>
+  <!-- RP2040 -->
+  <rect x="540" y="90" width="150" height="260" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="615" y="114" text-anchor="middle" font-weight="500">RP2040</text>
+  <text x="615" y="130" text-anchor="middle" font-size="10" fill="var(--muted)">W25Q32 · 12 MHz · USB-C</text>
+  <text x="552" y="160" font-size="10">GP0–7  data in</text>
+  <text x="552" y="180" font-size="10">GP8–10 /ALD /TXT /RESET</text>
+  <text x="552" y="196" font-size="10">GP12,15 CLK, /RDSTAT</text>
+  <text x="552" y="222" font-size="10">GP13  READY out</text>
+  <text x="552" y="246" font-size="10">GP20–27 status byte out</text>
+  <text x="552" y="282" font-size="10">GP16–18 I2S</text>
+  <text x="552" y="298" font-size="10">GP19  amp enable</text>
+  <text x="552" y="322" font-size="10">GP11  PWM line-out</text>
+  <line x1="450" y1="113" x2="540" y2="113" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="450" y1="183" x2="540" y2="183" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="540" y1="255" x2="450" y2="255" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="540" y1="327" x2="450" y2="327" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <!-- audio -->
+  <rect x="760" y="250" width="150" height="56" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="835" y="272" text-anchor="middle" font-size="11">MAX98357A</text>
+  <text x="835" y="288" text-anchor="middle" font-size="10" fill="var(--muted)">I2S → 4–8 Ω speaker</text>
+  <line x1="690" y1="278" x2="760" y2="278" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <rect x="760" y="318" width="150" height="40" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="835" y="336" text-anchor="middle" font-size="11">RC filter → 3.5 mm</text>
+  <text x="835" y="350" text-anchor="middle" font-size="10" fill="var(--muted)">line-out</text>
+  <line x1="690" y1="322" x2="760" y2="338" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <!-- power -->
+  <rect x="760" y="90" width="150" height="60" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="835" y="112" text-anchor="middle" font-size="11">POWER</text>
+  <text x="835" y="128" text-anchor="middle" font-size="10" fill="var(--muted)">bus 5 V ⊕ USB → LDO 3.3 V</text>
+  <text x="835" y="142" text-anchor="middle" font-size="10" fill="var(--muted)">5 V also feeds the amp</text>
+  <line x1="106" y1="296" x2="150" y2="296" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="150" y1="296" x2="150" y2="376" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="150" y1="376" x2="835" y2="376" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="835" y1="376" x2="835" y2="150" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah)"/>
+  <text x="500" y="371" text-anchor="middle" font-size="10" fill="var(--muted)">+5 V from the bus</text>
+</svg>
+<figcaption>Figure 1. Everything from the computer arrives at 5 V, is decoded at 5 V, and crosses the shaded boundary only through 74LVC245s or the 74LVC1G125. The two blue paths are the only signals the board drives back onto the bus, and both are enabled by the decoder, not by the firmware.</figcaption>
+</figure>
+
+<h2><span class="n">02</span>Edge connector</h2>
+<p>TS1000 footprint: two rows of 23 positions at 0.1 in, key slot at position 3, 1.6 mm board, hard-gold fingers with a chamfered lead-in. The same card plugs into the TS2068 rear connector, whose pinout is the ZX81 pinout shifted by three positions; the 2068's own positions 1–3 (including +15 V on 3B) lie beyond the card's edge and are never touched.</p>
+<div class="tablewrap"><table>
+<tr><th>Signal</th><th>TS1000</th><th>TS2068</th><th>Used by</th></tr>
+<tr><td>D0–D7</td><td>4A 5A 6A 9A 10A 8A 7A 1A</td><td>7A 8A 9A 12A 13A 11A 10A 4A</td><td>U_D inputs; U_R and the '1G125 drive them during reads</td></tr>
+<tr><td>A0–A3</td><td>7B 8B 9B 10B</td><td>10B 11B 12B 13B</td><td>74HCT688 P0–P3</td></tr>
+<tr><td>A4, A5</td><td>22B, 21B</td><td>25B, 24B</td><td>74HCT138 A, B</td></tr>
+<tr><td>A6, A7</td><td>20B, 19B</td><td>23B, 22B</td><td>74HCT688 P4, P5; A7 also to the loose-decode jumper</td></tr>
+<tr><td>/IORQ</td><td>15A</td><td>18A</td><td>'688 /G and '138 G2B</td></tr>
+<tr><td>/RD</td><td>16A</td><td>19A</td><td>'138 C (high = write cycle)</td></tr>
+<tr><td>/M1</td><td>22A</td><td>25A</td><td>'138 G1 (blocks interrupt acknowledge)</td></tr>
+<tr><td>/RESET</td><td>21A</td><td>24A</td><td>U_S → GP10</td></tr>
+<tr><td>CLK</td><td>6B</td><td>9B</td><td>U_S → GP12 (3.25 / 3.5 MHz sense)</td></tr>
+<tr><td>+5 V</td><td>1B</td><td>4B</td><td>through polyfuse and Schottky</td></tr>
+<tr><td>GND</td><td>4B 5B</td><td>7B 8B</td><td>ground plane, both fingers</td></tr>
+</table></div>
+<p>Eleven address and control lines and eight data lines: 19 signals plus power. Nothing else on the connector is used, so the remaining fingers are left unplated on the card to reduce the risk of a shorted neighbour when inserting.</p>
+
+<h2><span class="n">03</span>Port decode</h2>
+<figure>
+<svg viewBox="0 0 940 430" role="img" aria-label="The 74HCT688 compares A0-A3, A6 and A7 against six solder jumpers; its P=Q output, or A7 directly via the loose-decode jumper, enables the 74HCT138, which splits A4, A5 and /RD into the four strobes /ALD, /TXT, /RDSTAT and /RDEXT.">
+  <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <!-- 688 -->
+  <rect x="200" y="40" width="150" height="230" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="275" y="62" text-anchor="middle" font-weight="500">74HCT688</text>
+  <text x="275" y="76" text-anchor="middle" font-size="10" fill="var(--muted)">8-bit identity comparator</text>
+  <g font-size="11">
+    <text x="208" y="102">P0</text><text x="208" y="122">P1</text><text x="208" y="142">P2</text><text x="208" y="162">P3</text>
+    <text x="208" y="182">P4</text><text x="208" y="202">P5</text><text x="208" y="222">P6,P7</text><text x="208" y="252">/G</text>
+    <text x="342" y="102" text-anchor="end">Q0</text><text x="342" y="122" text-anchor="end">Q1</text><text x="342" y="142" text-anchor="end">Q2</text><text x="342" y="162" text-anchor="end">Q3</text>
+    <text x="342" y="182" text-anchor="end">Q4</text><text x="342" y="202" text-anchor="end">Q5</text><text x="342" y="222" text-anchor="end">Q6,Q7</text>
+    <text x="342" y="252" text-anchor="end">/P=Q</text>
+  </g>
+  <!-- inputs to P -->
+  <g font-size="11">
+    <text x="60" y="102">A0</text><text x="60" y="122">A1</text><text x="60" y="142">A2</text><text x="60" y="162">A3</text>
+    <text x="60" y="182">A6</text><text x="60" y="202">A7</text><text x="60" y="222">GND</text><text x="60" y="252">/IORQ</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#ah2)">
+    <line x1="100" y1="98" x2="200" y2="98"/><line x1="100" y1="118" x2="200" y2="118"/><line x1="100" y1="138" x2="200" y2="138"/><line x1="100" y1="158" x2="200" y2="158"/>
+    <line x1="100" y1="178" x2="200" y2="178"/><line x1="100" y1="198" x2="200" y2="198"/><line x1="100" y1="218" x2="200" y2="218"/><line x1="100" y1="248" x2="200" y2="248"/>
+  </g>
+  <!-- jumpers on Q -->
+  <g font-size="10" fill="var(--copper)">
+    <text x="372" y="102">JP1 = 1</text><text x="372" y="122">JP2 = 1</text><text x="372" y="142">JP3 = 1</text><text x="372" y="162">JP4 = 0</text>
+    <text x="372" y="182">JP5 = 0</text><text x="372" y="202">JP6 = 0</text><text x="372" y="222">GND</text>
+  </g>
+  <text x="372" y="240" font-size="10" fill="var(--muted)">defaults → low nibble 7,</text>
+  <text x="372" y="253" font-size="10" fill="var(--muted)">A6 = A7 = 0</text>
+  <g stroke="currentColor" stroke-width="1.5">
+    <line x1="350" y1="98" x2="368" y2="98"/><line x1="350" y1="118" x2="368" y2="118"/><line x1="350" y1="138" x2="368" y2="138"/><line x1="350" y1="158" x2="368" y2="158"/>
+    <line x1="350" y1="178" x2="368" y2="178"/><line x1="350" y1="198" x2="368" y2="198"/><line x1="350" y1="218" x2="368" y2="218"/>
+  </g>
+  <!-- P=Q to loose jumper -->
+  <line x1="350" y1="248" x2="420" y2="248" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="420" y1="248" x2="420" y2="300" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="420" y1="300" x2="470" y2="300" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah2)"/>
+  <!-- loose jumper -->
+  <rect x="470" y="282" width="110" height="40" rx="2" fill="var(--copper-soft)" stroke="var(--copper)" stroke-width="1.5"/>
+  <text x="525" y="299" text-anchor="middle" font-size="11">JP7 LOOSE</text>
+  <text x="525" y="313" text-anchor="middle" font-size="10" fill="var(--muted)">strict ● | ○ A7</text>
+  <text x="440" y="340" font-size="11">A7</text>
+  <line x1="460" y1="336" x2="500" y2="336" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="500" y1="336" x2="500" y2="322" stroke="currentColor" stroke-width="1.5"/>
+  <!-- 138 -->
+  <rect x="640" y="180" width="150" height="230" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="715" y="202" text-anchor="middle" font-weight="500">74HCT138</text>
+  <text x="715" y="216" text-anchor="middle" font-size="10" fill="var(--muted)">3-to-8 decoder</text>
+  <g font-size="11">
+    <text x="648" y="246">A</text><text x="648" y="266">B</text><text x="648" y="286">C</text>
+    <text x="648" y="316">G2A</text><text x="648" y="336">G2B</text><text x="648" y="356">G1</text>
+    <text x="782" y="246" text-anchor="end">Y5</text><text x="782" y="286" text-anchor="end">Y7</text>
+    <text x="782" y="326" text-anchor="end">Y2</text><text x="782" y="366" text-anchor="end">Y3</text>
+  </g>
+  <g font-size="11">
+    <text x="560" y="246">A4</text><text x="560" y="266">A5</text><text x="560" y="286">/RD</text>
+    <text x="560" y="336">/IORQ</text><text x="560" y="356">/M1</text>
+  </g>
+  <g stroke="currentColor" stroke-width="1.5" marker-end="url(#ah2)">
+    <line x1="600" y1="242" x2="640" y2="242"/><line x1="600" y1="262" x2="640" y2="262"/><line x1="600" y1="282" x2="640" y2="282"/>
+    <line x1="600" y1="332" x2="640" y2="332"/><line x1="600" y1="352" x2="640" y2="352"/>
+  </g>
+  <line x1="580" y1="300" x2="610" y2="300" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="610" y1="300" x2="610" y2="312" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="610" y1="312" x2="640" y2="312" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah2)"/>
+  <!-- outputs -->
+  <g stroke="var(--accent)" stroke-width="1.8" marker-end="url(#ah2)">
+    <line x1="790" y1="242" x2="840" y2="242"/><line x1="790" y1="282" x2="840" y2="282"/><line x1="790" y1="322" x2="840" y2="322"/><line x1="790" y1="362" x2="840" y2="362"/>
+  </g>
+  <g font-size="11" fill="var(--accent)">
+    <text x="848" y="246">/ALD  OUT 0x17</text><text x="848" y="286">/TXT  OUT 0x37</text>
+    <text x="848" y="326">/RDSTAT  IN 0x27</text><text x="848" y="366">/RDEXT  IN 0x37</text>
+  </g>
+  <text x="60" y="400" font-size="10" fill="var(--muted)">Y index = 4·/RD + 2·A5 + A4. Writes (RD high) land on Y4–Y7, reads on Y0–Y3. Y0, Y1, Y4, Y6 are unused (ports 0x07 and OUT 0x27).</text>
+</svg>
+<figcaption>Figure 2. Strict decode: the comparator only opens the decoder when A0–A3 read 0111 and A6, A7 read 00, so each strobe answers to one port number. Closing JP7 to the A7 side bypasses the comparator and reproduces Rigter's three-bit decode, where OUT 17 / IN 37 also work.</figcaption>
+</figure>
+<ul>
+<li><strong>Why HCT.</strong> The 2068's /IORQ, /RD and /M1 reach the rear connector through 74LS buffers whose guaranteed high is 2.7 V. HC inputs at 5 V want 3.5 V; HCT inputs switch at 1.4 V. The 2023 board's HC138 works by grace of typical levels.</li>
+<li><strong>Why not /WR.</strong> The '138 uses /RD as in the original: a write cycle is /IORQ low with /RD high. /M1 on G1 keeps interrupt-acknowledge cycles (both /IORQ and /M1 low) out.</li>
+<li><strong>Timing.</strong> '688 (typ. 25 ns) + '138 (typ. 20 ns) + '245 (typ. 5 ns) puts /ALD at the Pico about 50 ns after /IORQ falls, inside a cycle of roughly 700 ns at 3.25–3.5 MHz. The Z80 has had data on the bus since T1.</li>
+<li><strong>Port 0x07.</strong> The strict decode's fourth slot is never enabled by this board. On the ZX81 it is ZXpand's port, so leave it that way.</li>
+</ul>
+
+<h2><span class="n">04</span>Reads answered in hardware</h2>
+<figure>
+<svg viewBox="0 0 940 250" role="img" aria-label="Two read paths: during IN 39 the /RDSTAT strobe enables a 74LVC1G125 that puts the READY GPIO onto D7; during IN 55 the /RDEXT strobe enables a 74LVC245 that puts GP20-27 onto D0-D7. The firmware only keeps the GPIOs up to date.">
+  <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <!-- path 1 -->
+  <text x="20" y="40" font-weight="500">IN 39  status bit</text>
+  <rect x="20" y="60" width="120" height="44" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="80" y="79" text-anchor="middle" font-size="11">RP2040 GP13</text>
+  <text x="80" y="94" text-anchor="middle" font-size="10" fill="var(--muted)">READY = 1 when idle</text>
+  <rect x="230" y="60" width="130" height="44" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="295" y="79" text-anchor="middle" font-size="11">74LVC1G125</text>
+  <text x="295" y="94" text-anchor="middle" font-size="10" fill="var(--muted)">A → Y, /OE</text>
+  <line x1="140" y1="82" x2="230" y2="82" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah3)"/>
+  <line x1="360" y1="82" x2="440" y2="82" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#ah3)"/>
+  <text x="452" y="86" font-size="11" fill="var(--accent)">D7 on the bus</text>
+  <line x1="295" y1="140" x2="295" y2="104" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah3)"/>
+  <text x="295" y="156" text-anchor="middle" font-size="11">/RDSTAT (Y2)</text>
+  <text x="295" y="170" text-anchor="middle" font-size="10" fill="var(--muted)">low for the ~700 ns of the IN cycle</text>
+  <!-- path 2 -->
+  <text x="560" y="40" font-weight="500">IN 55  status byte</text>
+  <rect x="560" y="60" width="120" height="44" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="620" y="79" text-anchor="middle" font-size="11">RP2040 GP20–27</text>
+  <text x="620" y="94" text-anchor="middle" font-size="10" fill="var(--muted)">held at the current byte</text>
+  <rect x="740" y="60" width="130" height="44" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="805" y="79" text-anchor="middle" font-size="11">74LVC245 U_R</text>
+  <text x="805" y="94" text-anchor="middle" font-size="10" fill="var(--muted)">B → A, /OE</text>
+  <line x1="680" y1="82" x2="740" y2="82" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah3)"/>
+  <line x1="870" y1="82" x2="920" y2="82" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#ah3)"/>
+  <text x="890" y="112" text-anchor="middle" font-size="11" fill="var(--accent)">D0–D7</text>
+  <line x1="805" y1="140" x2="805" y2="104" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah3)"/>
+  <text x="805" y="156" text-anchor="middle" font-size="11">/RDEXT (Y3)</text>
+  <text x="805" y="170" text-anchor="middle" font-size="10" fill="var(--muted)">low for the IN cycle</text>
+  <line x1="20" y1="200" x2="920" y2="200" stroke="var(--rule)" stroke-width="1"/>
+  <text x="20" y="226" font-size="11" fill="var(--muted)">Outputs are high-impedance and 5 V tolerant whenever the strobe is high. The firmware never sees the read; it only keeps the GPIO levels current.</text>
+</svg>
+<figcaption>Figure 3. Both read ports are gated by decoder outputs, so the response is valid within nanoseconds of the strobe and needs no software timing. The '1G125 actively drives D7 high when ready, which removes the 2068-only pull-up of the original design and behaves the same on a TS1000.</figcaption>
+</figure>
+<p>The status byte on IN 55 is a firmware convention, not a chip feature: bit 7 ready (same as IN 39), bit 6 text buffer has room, bit 5 talking, bit 4 engine (0 NRL, 1 CTS256), bits 0–3 reserved. It costs eight GPIOs and one '245, both of which the bare RP2040 has to spare; on a hand-built RP2040-Zero card the part is simply not fitted.</p>
+
+<h2><span class="n">05</span>Level shifting</h2>
+<div class="tablewrap"><table>
+<tr><th>Part</th><th>A side (5 V bus)</th><th>B side (3.3 V)</th><th>DIR</th><th>/OE</th></tr>
+<tr><td>U_D 74LVC245</td><td>D0–D7</td><td>GP0–GP7</td><td>A→B (high)</td><td>GND, always on</td></tr>
+<tr><td>U_S 74LVC245</td><td>/ALD (Y5), /TXT (Y7), /RDSTAT (Y2), /RESET, CLK; 3 spare tied low</td><td>GP8, GP9, GP15, GP10, GP12</td><td>A→B (high)</td><td>GND, always on</td></tr>
+<tr><td>U_R 74LVC245</td><td>D0–D7</td><td>GP20–GP27</td><td>B→A (low)</td><td>/RDEXT (Y3)</td></tr>
+<tr><td>U_B 74LVC1G125</td><td>Y → D7</td><td>A ← GP13 READY</td><td>—</td><td>/RDSTAT (Y2)</td></tr>
+</table></div>
+<ul>
+<li>All four run from 3.3 V. LVC inputs tolerate 5.5 V even with VCC absent, which covers the half millisecond after power-on when the Z80 bus is already live and the LDO is still ramping. That is the reason the RP2350's own 5 V tolerance would not have removed these parts.</li>
+<li>A 3.3 V high from U_R and U_B is a legal TTL high (Z80 V<sub>IH</sub> is 2.0 V). 33 Ω series resistors on the eight U_R outputs and on the '1G125 output tame ringing on the unterminated bus.</li>
+<li>Ground: one full plane, both GND fingers, and a 100 nF decoupler per logic part next to its VCC pin. The retro-comp reports of flaky '245 boards trace to single ground returns and unmatched ground bounce, not to the parts.</li>
+</ul>
+
+<h2><span class="n">06</span>RP2040 minimal circuit</h2>
+<p>Straight from Raspberry Pi's "Hardware design with RP2040" minimal example, which is what the assembler's part library is built around.</p>
+<ul>
+<li><strong>Flash:</strong> W25Q32JVSSIQ, 4 MB, SOIC-8, on QSPI with 22–33 Ω series on CLK. BOOTSEL button pulls QSPI_SS (CS) low through 1 kΩ.</li>
+<li><strong>Clock:</strong> ABM8-272-T3 12 MHz crystal, 15 pF load capacitors, 1 kΩ in series with XOUT.</li>
+<li><strong>Power:</strong> AP2112K-3.3 LDO (600 mA, SOT-23-5) from the board 5 V rail; 1 µF on each of the two DVDD (1.1 V internal regulator) pins; 100 nF on every IOVDD/DVDD pin plus a 10 µF bulk on 3.3 V. VREG_IN and VREG_VOUT wired as in the reference design.</li>
+<li><strong>USB:</strong> USB-C receptacle (16-pin, USB 2.0 only), 5.1 kΩ from each CC pin to ground so a host will supply 5 V, 27 Ω series on D+ and D−, ESD diode array optional. VBUS goes to the power OR, never straight to the bus 5 V.</li>
+<li><strong>RUN:</strong> 10 kΩ pull-up and a reset button. SWD: three-pin header (SWCLK, GND, SWDIO) for a debug probe.</li>
+<li><strong>Not fitted from the reference:</strong> the ADC reference filter (no ADC use) and the on-board LED, replaced by the SBY "talking" LED on GP14 through 1 kΩ.</li>
+</ul>
+
+<h2><span class="n">07</span>Audio</h2>
+<ul>
+<li><strong>MAX98357A</strong> (TQFN-16: DIN 1, GAIN_SLOT 2, SD_MODE 4, VDD 7–8, OUTP 9, OUTN 10, LRCLK 14, BCLK 16, GND 3/11/15 and the pad) on 5 V. GAIN_SLOT left open for 9 dB. SD_MODE from GP19 through 1 kΩ: high selects the left channel and enables the amplifier, low is shutdown, so the firmware mutes it while the chip is in standby and the speaker is silent between utterances. Speaker on a JST-PH 2-pin header; 8 Ω recommended (see power). 10 µF plus 100 nF at the VDD pins, 220 µF bulk on the 5 V rail near the amp.</li>
+<li><strong>Sample rate.</strong> The datasheet allows LRCLK only at 8, 16, 32, 44.1, 48, 88.2 or 96 kHz; 10 kHz is not among them. The I2S back end therefore runs the frame clock at 32 kHz and interpolates the chip's 10 kHz samples (ratio 3.2, fixed-point linear interpolation, a few cycles per sample). The PWM line-out keeps its native rate. Removing BCLK puts the part in standby on its own; the firmware also drops SD_MODE when idle.</li>
+<li><strong>Line-out</strong> kept from the 2023 design: GP11 PWM → 3.3 kΩ / 22 nF → 3.3 kΩ / 22 nF → 10 µF → 3.5 mm jack, with a 100 kΩ bleed to ground. Corner at 2.2 kHz. Solder jumper JP8 substitutes 33 kΩ for the second resistor for the original 33k "vintage" tone. No volume pot: level is set in firmware.</li>
+<li>The firmware mirrors the same sample stream to both outputs; the I2S back end is a second `audio.c` implementation selected by the board define.</li>
+</ul>
+
+<h2><span class="n">08</span>Power</h2>
+<figure>
+<svg viewBox="0 0 900 200" role="img" aria-label="Bus 5 V through a 500 mA polyfuse and a Schottky diode, and USB VBUS through a second Schottky diode, join at the board 5 V rail that feeds the MAX98357A and the 3.3 V LDO for the logic.">
+  <defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+  <text x="20" y="60" font-size="11">bus +5 V</text>
+  <rect x="100" y="44" width="70" height="28" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="135" y="62" text-anchor="middle" font-size="10">PTC 500 mA</text>
+  <line x1="78" y1="58" x2="100" y2="58" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="170" y1="58" x2="230" y2="58" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah4)"/>
+  <polygon points="230,48 250,58 230,68" fill="currentColor"/><line x1="250" y1="48" x2="250" y2="68" stroke="currentColor" stroke-width="1.5"/>
+  <text x="240" y="84" text-anchor="middle" font-size="10" fill="var(--muted)">D1 B5819W</text>
+  <line x1="250" y1="58" x2="360" y2="58" stroke="currentColor" stroke-width="1.5"/>
+  <text x="20" y="140" font-size="11">USB VBUS</text>
+  <line x1="88" y1="136" x2="230" y2="136" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah4)"/>
+  <polygon points="230,126 250,136 230,146" fill="currentColor"/><line x1="250" y1="126" x2="250" y2="146" stroke="currentColor" stroke-width="1.5"/>
+  <text x="240" y="162" text-anchor="middle" font-size="10" fill="var(--muted)">D2 B5819W</text>
+  <line x1="250" y1="136" x2="360" y2="136" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="360" y1="58" x2="360" y2="136" stroke="currentColor" stroke-width="1.5"/>
+  <circle cx="360" cy="97" r="3" fill="currentColor"/>
+  <line x1="360" y1="97" x2="430" y2="97" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah4)"/>
+  <text x="470" y="101" font-size="11" font-weight="500">+5V_BOARD ≈ 4.6 V</text>
+  <line x1="600" y1="97" x2="640" y2="97" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="640" y1="60" x2="640" y2="140" stroke="currentColor" stroke-width="1.5"/>
+  <line x1="640" y1="60" x2="700" y2="60" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah4)"/>
+  <line x1="640" y1="140" x2="700" y2="140" stroke="currentColor" stroke-width="1.5" marker-end="url(#ah4)"/>
+  <rect x="700" y="44" width="170" height="32" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="785" y="64" text-anchor="middle" font-size="11">MAX98357A  (2.5–5.5 V)</text>
+  <rect x="700" y="124" width="170" height="32" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="785" y="144" text-anchor="middle" font-size="11">AP2112K → 3.3 V logic</text>
+  <text x="20" y="190" font-size="10" fill="var(--muted)">Neither source can feed the other: USB cannot back-drive the computer, and the computer cannot push current into a PC.</text>
+</svg>
+<figcaption>Figure 4. Two supplies, one rail. The Schottky drop leaves about 4.6 V, which is fine for the amplifier and the LDO. The polyfuse protects the host's 7805 if something on the card fails.</figcaption>
+</figure>
+<div class="tablewrap"><table>
+<tr><th>Load</th><th>Typical</th><th>Peak</th></tr>
+<tr><td>RP2040 + flash at 125 MHz</td><td>35 mA</td><td>50 mA</td></tr>
+<tr><td>Logic ('688, '138, 3× '245, '1G125)</td><td>5 mA</td><td>15 mA</td></tr>
+<tr><td>MAX98357A idle / speech at moderate level into 8 Ω</td><td>3 mA / 80 mA</td><td>350 mA into 4 Ω at full scale</td></tr>
+<tr><td>Total on the bus 5 V</td><td>≈ 125 mA</td><td>≈ 420 mA</td></tr>
+</table></div>
+<div class="callout"><p>The ZX81's 7805 has little headroom, and Rigter's LM386 board drew of the order of 100–150 mA. Rev B stays in that range with an 8 Ω speaker and the firmware volume at its default. For a louder 4 Ω speaker, power the card from USB, where the amplifier's peaks are no longer the ZX81's problem. The 2068's supply is comfortable either way.</p></div>
+
+<h2><span class="n">09</span>GPIO map</h2>
+<div class="tablewrap"><table>
+<tr><th>GPIO</th><th>Signal</th><th>Dir</th><th>Via</th><th>Notes</th></tr>
+<tr><td>GP0–GP7</td><td>D0–D7</td><td>in</td><td>U_D</td><td>same as the 2023 board for D0–D5</td></tr>
+<tr><td>GP8</td><td>/ALD</td><td>in</td><td>U_S ← Y5</td><td>OUT 0x17</td></tr>
+<tr><td>GP9</td><td>/TXT</td><td>in</td><td>U_S ← Y7</td><td>OUT 0x37</td></tr>
+<tr><td>GP10</td><td>/RESET</td><td>in</td><td>U_S</td><td>chip reset, as SBY RESET</td></tr>
+<tr><td>GP11</td><td>PWM line-out</td><td>out</td><td>RC → jack</td><td>as the 2023 board</td></tr>
+<tr><td>GP12</td><td>CLK sense</td><td>in</td><td>U_S</td><td>3.25 MHz TS1000, 3.5 MHz 2068: firmware picks the pitch</td></tr>
+<tr><td>GP13</td><td>READY</td><td>out</td><td>'1G125 → D7</td><td>2023 board drove /LRQ (busy) here; polarity is a board define</td></tr>
+<tr><td>GP14</td><td>SBY LED</td><td>out</td><td>1 kΩ → LED</td><td></td></tr>
+<tr><td>GP15</td><td>/RDSTAT sense</td><td>in</td><td>U_S ← Y2</td><td>optional, for the STATUS counters</td></tr>
+<tr><td>GP16, GP17, GP18</td><td>I2S DIN, BCLK, LRCLK</td><td>out</td><td>MAX98357A</td><td>BCLK/LRCLK adjacent for the PIO I2S program</td></tr>
+<tr><td>GP19</td><td>AMP_EN</td><td>out</td><td>SD_MODE</td><td>mute when idle</td></tr>
+<tr><td>GP20–GP27</td><td>status byte</td><td>out</td><td>U_R → D0–D7</td><td>IN 0x37</td></tr>
+<tr><td>GP28, GP29</td><td>board ID</td><td>in</td><td>solder jumpers</td><td>firmware reads at boot: 00 = 2023 card, 01 = Rev B</td></tr>
+</table></div>
+<p>All 30 GPIOs are used. The RP2040-Zero fallback exposes 20 on its edge, enough for everything except the status byte and the /RDSTAT sense.</p>
+
+<h2><span class="n">10</span>Jumpers</h2>
+<div class="tablewrap"><table>
+<tr><th>Jumper</th><th>Type</th><th>Default</th><th>Meaning</th></tr>
+<tr><td>JP1–JP4</td><td>3-pad solder, centre to Q0–Q3</td><td>1 1 1 0</td><td>low address nibble the board answers to (7)</td></tr>
+<tr><td>JP5, JP6</td><td>3-pad solder, centre to Q4, Q5</td><td>0 0</td><td>required A6, A7</td></tr>
+<tr><td>JP7 LOOSE</td><td>3-pad solder, centre to '138 G2A</td><td>strict ('688 output)</td><td>other side: A7 direct, Rigter's decode</td></tr>
+<tr><td>JP8 VINTAGE</td><td>2-pad solder across 30 kΩ</td><td>bridged</td><td>open it to add 30 kΩ to the second filter stage: the original 33 kΩ tone</td></tr>
+<tr><td>JP9, JP10</td><td>2-pad solder to GP28, GP29</td><td>open / closed</td><td>board ID read by firmware</td></tr>
+</table></div>
+
+<h2><span class="n">11</span>Bill of materials</h2>
+<p>All SMD, 0603 passives, chosen from parts the assembler keeps in stock. LCSC numbers given where confirmed; the rest are ordinary catalogue parts to be picked at order time.</p>
+<div class="tablewrap"><table>
+<tr><th>Ref</th><th>Part</th><th>Package</th><th>LCSC</th><th>Qty</th></tr>
+<tr><td>U1</td><td>RP2040</td><td>QFN-56</td><td>C2040</td><td>1</td></tr>
+<tr><td>U2</td><td>W25Q32JVSSIQ 4 MB flash</td><td>SOIC-8</td><td>C82317</td><td>1</td></tr>
+<tr><td>Y1</td><td>ABM8-272-T3 12 MHz</td><td>3.2×2.5</td><td>C20625</td><td>1</td></tr>
+<tr><td>U3</td><td>AP2112K-3.3TRG1 LDO</td><td>SOT-23-5</td><td>C51118</td><td>1</td></tr>
+<tr><td>U4, U5, U6</td><td>SN74LVC245APWR</td><td>TSSOP-20</td><td>C6112</td><td>3</td></tr>
+<tr><td>U7</td><td>SN74LVC1G125DBVR</td><td>SOT-23-5</td><td>catalogue</td><td>1</td></tr>
+<tr><td>U8</td><td>CD74HCT688M</td><td>SOIC-20</td><td>C553159</td><td>1</td></tr>
+<tr><td>U9</td><td>SN74HCT138DR</td><td>SOIC-16</td><td>catalogue</td><td>1</td></tr>
+<tr><td>U10</td><td>MAX98357AETE+T</td><td>TQFN-16</td><td>C910544</td><td>1</td></tr>
+<tr><td>D1, D2</td><td>B5819W Schottky 1 A</td><td>SOD-123</td><td>C8598</td><td>2</td></tr>
+<tr><td>F1</td><td>PTC resettable fuse 500 mA hold</td><td>1206</td><td>catalogue</td><td>1</td></tr>
+<tr><td>J1</td><td>TS1000 edge, 2×23 fingers</td><td>PCB</td><td>—</td><td>1</td></tr>
+<tr><td>J2</td><td>USB-C receptacle 16-pin</td><td>SMD</td><td>C165948</td><td>1</td></tr>
+<tr><td>J3</td><td>JST B2B-PH-K-S speaker</td><td>2.0 mm</td><td>C131337</td><td>1</td></tr>
+<tr><td>J4</td><td>3.5 mm stereo jack (PJ-320A type)</td><td>SMD</td><td>catalogue</td><td>1</td></tr>
+<tr><td>J5</td><td>SWD header 1×3</td><td>2.54 mm</td><td>—</td><td>1</td></tr>
+<tr><td>SW1, SW2</td><td>Tactile BOOTSEL, RESET</td><td>SMD 6×3.5</td><td>C318884</td><td>2</td></tr>
+<tr><td>LED1</td><td>SBY indicator</td><td>0603</td><td>catalogue</td><td>1</td></tr>
+<tr><td>R</td><td>27 Ω ×2, 33 Ω ×9, 1 kΩ ×4, 3.3 kΩ ×2, 5.1 kΩ ×2, 10 kΩ ×2, 30 kΩ, 100 kΩ</td><td>0603</td><td>basic</td><td>23</td></tr>
+<tr><td>C</td><td>15 pF ×2, 22 nF ×2, 100 nF ×14, 1 µF ×3, 10 µF ×4</td><td>0603 / 0805</td><td>basic</td><td>25</td></tr>
+<tr><td>C</td><td>220 µF electrolytic, amp bulk</td><td>6.3 mm SMD</td><td>catalogue</td><td>1</td></tr>
+</table></div>
+
+<h2><span class="n">12</span>Netlist</h2>
+<p>The whole board is written out pin by pin in <code>hardware/revb/zxvoice-revb.net</code> (Protel format, for EasyEDA Pro's File → Import → Netlist) with a flat CSV of every connection and a BOM CSV beside it, all generated by <code>tools/revb_netlist.py</code>. The generator refuses to emit anything unless every pin of every part is on exactly one net or explicitly declared no-connect, and every net has at least two members: 83 parts, 106 nets, 374 connections. Pinouts were taken from the datasheets (RP2040 QFN-56, W25Q32, ABM8, AP2112K, LVC245, LVC1G125, CD74HCT688 SCHS196E, HCT138, MAX98357A 19-6552). The line-out second stage is 3.3 kΩ + 30 kΩ with JP8 bridged across the 30 kΩ, which is how the "vintage" option is implemented without a second footprint.</p>
+
+<h2><span class="n">13</span>Layout notes</h2>
+<ul>
+<li>Decoder and comparator sit right behind the fingers; the three '245s and the '1G125 form the boundary between the 5 V half and the 3.3 V half, so no 5 V trace crosses into the RP2040 area.</li>
+<li>RP2040, flash and crystal in the reference-design arrangement: flash within 10 mm of the QSPI pins, crystal and its capacitors on the same side with a ground pour beneath, USB pair routed as a 90 Ω differential pair with the 27 Ω resistors near the chip.</li>
+<li>Amplifier and its 220 µF near the speaker header at the rear edge, away from the crystal. Speaker traces at least 0.5 mm wide.</li>
+<li>USB-C, speaker header, line-out jack and the SBY LED all on the rear edge so they are reachable with the card plugged in.</li>
+<li>Card outline: fingers on the front edge, rear edge about 65 mm back, width dictated by the 23-position connector (58.4 mm). Two layers are enough.</li>
+</ul>
+
+<h2><span class="n">14</span>Open items</h2>
+<ul>
+<li>Confirm the 2068 rear-connector key slot lines up with the TS1000 card key at position 3 so the card cannot be inserted three positions off, and that the 2068's +15 V at 3B is clear of the card's edge.</li>
+<li>Check the 2068's A0–A12 drive: they come from the Z80 unbuffered (the schematic buffers only A13–A15 and the control lines). NMOS highs are well above 1.4 V, so HCT is safe; noted for completeness.</li>
+<li>Decide whether the SWD header and the line-out jack are worth their board space on a production card; both can be DNP.</li>
+<li>Firmware: a Rev B board define (pin map above, READY polarity, I2S back end, board ID on GP28/29) goes in before the first Rev B card is powered.</li>
+</ul>
+</div>
