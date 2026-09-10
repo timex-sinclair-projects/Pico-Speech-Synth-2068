@@ -1,0 +1,52 @@
+;
+; bus.pio -- capture one byte from the Z80 data bus on the falling edge of
+; an active-low strobe.
+;
+; JMP pin  = the strobe (a 74HC138 output, through the 74LVC245)
+; IN base  = D0, eight consecutive GPIOs
+;
+; The Z80 puts write data on the bus in T1 and the strobe falls at T2, so the
+; bus is valid when the edge arrives.  The sample happens within two PIO
+; cycles (16 ns at 125 MHz) of the edge.  Autopush at 8 bits delivers the byte
+; to the RX FIFO, which raises an interrupt on the CPU side.
+;
+; One program serves both strobes: two state machines, same IN base,
+; different JMP pins.
+;
+
+.program strobe_capture
+
+.wrap_target
+wait_rise:
+    jmp pin wait_fall       ; strobe high: go wait for the falling edge
+    jmp wait_rise           ; still low from the last cycle: keep waiting
+wait_fall:
+    jmp pin wait_fall       ; spin while the strobe is high
+    in pins, 8              ; falling edge: capture D0..D7 (autopush)
+.wrap
+
+% c-sdk {
+#include "hardware/gpio.h"
+
+static inline void strobe_capture_program_init(PIO pio, uint sm, uint offset,
+                                               uint data_base, uint strobe_pin)
+{
+    pio_sm_config c = strobe_capture_program_get_default_config(offset);
+
+    sm_config_set_in_pins(&c, data_base);
+    sm_config_set_jmp_pin(&c, strobe_pin);
+    sm_config_set_in_shift(&c, false, true, 8);     /* shift left, autopush 8 */
+    sm_config_set_fifo_join(&c, PIO_FIFO_JOIN_RX);
+    sm_config_set_clkdiv(&c, 1.0f);
+
+    for (uint i = 0; i < 8; i++) {
+        pio_gpio_init(pio, data_base + i);
+    }
+    pio_gpio_init(pio, strobe_pin);
+    pio_sm_set_consecutive_pindirs(pio, sm, data_base, 8, false);
+    pio_sm_set_consecutive_pindirs(pio, sm, strobe_pin, 1, false);
+
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+%}

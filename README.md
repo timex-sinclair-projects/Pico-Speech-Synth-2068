@@ -1,5 +1,29 @@
 # Pico Speech Synth 2068
 
+A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040), on Wilf Rigter's 1986 ZX Voice port map for the Timex/Sinclair 1000 and 2068.
+
+## 2026: ROM emulation, C firmware, text-to-speech
+
+The project was rebuilt in September 2026. The MicroPython firmware below is kept for reference; the current work is:
+
+| Directory | What |
+|---|---|
+| [`PROPOSAL.md`](PROPOSAL.md) | Design proposal: findings, hardware Rev B, firmware, plan |
+| [`core/`](core/) | Portable C port of MAME's SP0256 core (BSD-3-Clause): the chip is emulated from its ROM instead of playing recordings |
+| [`rom/`](rom/README.md) | The 2 KB SP0256-AL2 ROM image, distributed under Microchip's 2007 permission to Joe Zbiciak, with the notice |
+| [`harness/`](harness/README.md) | Desktop tools: render allophones and text to WAV, compare timing to the datasheet |
+| [`tts/`](tts/README.md) | Two text-to-allophone engines: NRL rules (public domain) and the CTS256A-AL2 rule set (GPL-3.0) |
+| [`firmware/`](firmware/README.md) | Pico SDK firmware for the 2023 board: PIO bus capture, DMA audio, USB console, OUT 55 text port |
+| [`basic/`](basic/README.md) | TS2068 BASIC demo and the TS1000 REM-line machine-code driver (`zxvoice1000.p`) |
+| [`reference/`](reference/README.md) | Upstream sources the above derive from, with licences |
+| [`tools/`](tools/) | Generators for the ROM header and the rule tables |
+
+Ports: `OUT 23` allophone, `IN 39` bit 7 = ready (as ZX Voice), `OUT 55` text and control bytes (new).
+
+---
+
+## Original MicroPython version (2023)
+
 A modern replacement for the classic General Instruments SP0256-AL2 speech synthesizer chip using the Raspberry Pi Pico (RP2040). This project provides hardware-accurate emulation for the Timex/Sinclair 1000 and 2068.
 
 ![SP0256 Emulator](https://img.shields.io/badge/Platform-RP2040-green) ![Language](https://img.shields.io/badge/Language-MicroPython-blue) ![Status](https://img.shields.io/badge/Status-Active-brightgreen)

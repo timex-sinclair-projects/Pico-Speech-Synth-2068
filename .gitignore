@@ -1,0 +1,6 @@
+build/
+*.wav
+harness/harness
+harness/harness_trace
+harness/out/
+__pycache__/

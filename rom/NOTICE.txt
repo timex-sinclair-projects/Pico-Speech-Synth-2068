@@ -1,0 +1,103 @@
+Source: http://spatula-city.org/~im14u2c/sp0256-al2/  (captured 2026-09-10)
+
+SP0256-AL2 ROM Image
+
+SP0256-AL2 ROM Image
+
+    Microchip, Inc. holds the copyright to the SP0256-AL2 
+    ROM Image.  I have a non-exclusive worldwide right to distribute this
+    ROM as long as I acknowledge this copyright.  Microchip retains the
+    intellectual property rights to the algorithms and data it contains.
+
+    Enjoy!
+
+al2.bin
+al2.bit
+al2.sym
+tagalong2v.zip -- Tagalong Todd 2 w/ Voice
+al2.zip -- assembleable allophone library
+-->
+Archer_SP0256-AL2.pdf
+
+    Below is the official email exchange with Microchip's legal department,
+    if you're curious.
+
+From: Legal.Department(at)microchip.com 
+Date: Aug 9, 2007 12:34 PM
+Subject: RE: General Instrument-related legal questions
+To: intvnut(at)gmail.com
+
+Joe:
+
+Yes, you may distribute the ROM data specified below so long as you acknowledge Microchip's ownership of the algorithms.
+
+Jacqueline
+
+| From: Joe Zbiciak [mailto:intvnut(at)gmail.com]
+| Sent: Wed 8/8/2007 9:56 AM
+| To: Legal Department
+| Subject: Re: General Instrument-related legal questions
+| 
+| Jacqueline,
+| 
+| Thank you for your quick reply.  I will include your email on the same site I post these data book scans.
+| 
+| I do have one remaining question governing the contents of the SP0256-AL2 ROM.  This ROM data can only really be used with SP0256 devices and software emulation of those devices.  May I distribute this ROM data as it has no longer has commercial value?  The purpose here is to generate spoken text with an SP0256-based video game system that doesn't have the SP0256-AL2 data built in.  (I intend to include the AL2 data in the game program and send it to the chip.)
+| 
+| Thank you again, and best regards,
+| 
+| --Joe Zbiciak
+| 1980s Video Game Hobbyist
+| 
+| On 8/8/07, Legal.Department(at)microchip.com  wrote:
+| | 
+| |     Mr. Zbiciak:
+| |      
+| | 
+| |     You are hereby granted a non-exclusive worldwide right to scan and distribute the data books subject to your compliance with the following conditions:
+| | 
+| |        1.  The content of the data books cannot be modified by you in any manner.
+| |        2.  Do not remove any copyright notices or other proprietary notices from the data books.
+| | 
+| |     Jacqueline Eichman
+| |     Legal Coordinator
+| |     Microchip Technology Incorporated
+| |     2355 W. Chandler Blvd.
+| |     Chandler, AZ 85224-6199 - USA
+| |     Direct Phone: 480-792-7894
+| |     Direct Fax: 480-792-4112
+| |     jacqueline.eichman(at)microchip.com
+| | 
+| |     THIS E-MAIL TRANSMISSION, AND ANY DOCUMENTS, FILES OR PREVIOUS E-MAILS ATTACHED TO IT, IS CONFIDENTIAL INFORMATION INTENDED ONLY FOR THE USE OF THE NAMED RECIPIENT(S). ANY DISSEMINATION, DISTRIBUTION OR DUPLICATION OF THIS TRANSMISSION IS STRICTLY PROHIBITED. If you believe you have received this e-mail in error, please notify the Sender and delete the e-mail from your system.
+| | 
+| | 
+| |      
+| | |     From: Joe Zbiciak [mailto:intvnut(at)gmail.com]
+| | |     Sent: Tue 8/7/2007 11:48 AM
+| | |     To: Legal Department
+| | |     Subject: General Instrument-related legal questions
+| | | 
+| | |     Hello,
+| | | 
+| | |     My name is Joe Zbiciak.  I am a hobbyist that works with older hardware from the late 1970s and early 1980s.  Included in this are several General Instrument devices.
+| | | 
+| | |     My understanding is that around 1989, General Instrument spun off its semiconductor division to form the company now known as Microchip. I presume the rights to General Instrument's semiconductor intellectual property (including data books, source code, etc.) transfered to Microchip as part of this spin off.
+| | | 
+| | |     My questions are as follows:
+| | | 
+| | |        1. General Instrument data books and manuals are invaluable for understanding this hardware.  They are also extremely hard to locate.  May I distribute scans of these data book pages?  The parts described have not been produced commercially for several years.  Part numbers of interest include:  CP-1610, AY-3-8900, AY-3-8914, AY-3-8915, RA-3-9600, RO-3-9603, RO-3-9604, RO-3-9605, and other parts related to these.  These devices were sold commercially as part of a larger system branded as "GIMINI."
+| | |        2. General Instrument also produced a flexible voice synthesis unit, the SP-0256 (sometimes written as SPO256), that both GI and Microchip occasionally marketed under the name Orator.  I am also interested in sharing data sheets for this device and related peripherals (SP-0256, SPR-016, SPR-128, SPB-640 and so on).
+| | |        3. There was one particularly popular Orator family member, the SP-0256-AL2.  This chip was sold for many years by Radio Shack.  This version contains a ROM program with a series of allophones.  (Allophones are small speech fragments that can be strung together to form words.)  This ROM code is easily extracted from the SP-0256-AL2 using openly documented test modes, and can be replayed to other SP-0256 family members via the SPB-640 or custom hardware.  I would like to know if I may redistribute the AL2 speech data for this specific purpose.  Please note that this is SP-0256 specific speech data that will be used only with SP-0256 devices. 
+| | | 
+| | |     All of the aforementioned products are not current products, and I believe many or all have been out of production for a decade or longer.  My interest is as a hobbyist making interesting projects from my childhood toys (specifically, writing new video games for old video game machines that use these devices), and enabling others who are similarly inclined to do the same.
+| | | 
+| | |     I look forward to your reply.
+| | | 
+| | |     Regards,
+| | | 
+| | |     --Joe Zbiciak
+| | | 
+| | |     -- 
+| | |     We sell spatulas, and that's all!
+| | |     http://spatula-city.org/~im14u2c/
+| | |     http://sdk-1600.spatula-city.org/
